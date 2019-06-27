@@ -32,10 +32,7 @@ namespace Lab2.Controllers
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
-            if (user == null)
-            {
-                return BadRequest(new { ErrorMessage = "Username already exists" });
-            }
+            
             return Ok(user);
 
         }
@@ -44,7 +41,11 @@ namespace Lab2.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody]PostUserDto registerModel)
         {
-            var user = _userService.Register(registerModel); 
+            var user = _userService.Register(registerModel);
+            if (user == null)
+            {
+                return BadRequest(new { ErrorMessage = "Username already exists" });
+            }
             return Ok(user);
         }
 

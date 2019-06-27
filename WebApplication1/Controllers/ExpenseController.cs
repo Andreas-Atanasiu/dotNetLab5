@@ -18,9 +18,12 @@ namespace Lab2.Controllers
     {
 
         private IExpenseService expenseService;
-        public ExpenseController(IExpenseService expenseService)
+        private IUsersService usersService;
+
+        public ExpenseController(IExpenseService expenseService, IUsersService usersService)
         {
-            this.expenseService = expenseService;  
+            this.expenseService = expenseService;
+            this.usersService = usersService;
         }
 
 
@@ -46,7 +49,8 @@ namespace Lab2.Controllers
         [HttpPost]
         public void Post([FromBody] PostExpenseDto expense)
         {
-            expenseService.Create(expense);   
+            User addedBy = usersService.GetCurrentUser(HttpContext);
+            expenseService.Create(expense, addedBy  );   
         }
 
 

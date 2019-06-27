@@ -62,7 +62,8 @@ namespace Lab2.DTOs
                 Date = expenseDto.Date,
                 Currency = expenseDto.Currency,
                 Type = type,
-                Comments = expenseDto.Comments
+                Comments = expenseDto.Comments,
+                Owner = 
             };
         }
     }

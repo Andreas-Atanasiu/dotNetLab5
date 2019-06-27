@@ -21,7 +21,7 @@ namespace Lab2.DTOs
             return new GetCommentsDto
             {
                 Id = comment.Id,
-                ExpenseId = comment.Expense.Id,
+                ExpenseId = comment.Expense?.Id,
                 Important = comment.Important,
                 Text = comment.Text,
 

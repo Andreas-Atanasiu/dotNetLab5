@@ -13,7 +13,7 @@ namespace Lab2.Services
 
         Expense GetById(int id);
 
-        Expense Create(PostExpenseDto expenseDto);
+        Expense Create(PostExpenseDto expenseDto, User addedBy);
 
         Expense Upsert(int id, Expense expense);
 

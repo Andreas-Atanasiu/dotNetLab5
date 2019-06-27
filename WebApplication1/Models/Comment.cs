@@ -14,5 +14,7 @@ namespace Lab2.Models
         public bool Important { get; set; }
 
         public Expense Expense { get; set; }
+
+        public User Owner { get; set; }
     }
 }

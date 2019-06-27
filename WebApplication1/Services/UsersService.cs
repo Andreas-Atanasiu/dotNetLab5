@@ -1,5 +1,6 @@
 ﻿using Lab2.DTOs;
 using Lab2.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -17,6 +18,8 @@ namespace Lab2.Services
     {
         GetUserDto Authenticate(string username, string password);
         GetUserDto Register(PostUserDto registerInfo);
+        User GetCurrentUser(HttpContext httpContext);
+
         IEnumerable<GetUserDto> GetAll();
     }
 
@@ -102,6 +105,14 @@ namespace Lab2.Services
             return Authenticate(registerInfo.Username, registerInfo.Password);
         }
 
+        public User GetCurrentUser(HttpContext httpContext)
+        {
+            string username = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+            //string accountType = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod).Value;
+            //return _context.Users.FirstOrDefault(u => u.Username == username && u.AccountType.ToString() == accountType);
+            return context.Users.FirstOrDefault(u => u.Username == username);
+        }
+
         public IEnumerable<GetUserDto> GetAll()
         {
             // return users without passwords
@@ -112,5 +123,7 @@ namespace Lab2.Services
                 Token = null
             });
         }
+
+         
     }
 }
