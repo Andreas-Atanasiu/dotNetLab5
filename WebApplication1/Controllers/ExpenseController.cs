@@ -50,6 +50,10 @@ namespace Lab2.Controllers
         public void Post([FromBody] PostExpenseDto expense)
         {
             User addedBy = usersService.GetCurrentUser(HttpContext);
+            //if(addedBy.UserRole ==  UserRole.UserManager)
+            //{
+            //    return Forbid();
+            //}
             expenseService.Create(expense, addedBy  );   
         }
 

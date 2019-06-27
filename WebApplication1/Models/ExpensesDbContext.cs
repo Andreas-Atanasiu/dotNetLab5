@@ -19,6 +19,11 @@ namespace Lab2.Models
                 entity.HasIndex(u => u.Username).IsUnique();
             });
 
+            builder.Entity<Comment>()
+            .HasOne(e => e.Expense)
+            .WithMany(c => c.Comments)
+            .OnDelete(DeleteBehavior.Cascade);
+
             
         }
 
