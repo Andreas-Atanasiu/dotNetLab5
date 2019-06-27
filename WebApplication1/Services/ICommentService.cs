@@ -1,4 +1,5 @@
 ﻿using Lab2.DTOs;
+using Lab2.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,6 @@ namespace Lab2.Services
 {
     public interface ICommentService
     {
-        IEnumerable<GetCommentsDto> GetComments(string text = "");
+        PaginatedList<GetCommentsDto> GetAll(int page, string text = "");
     }
 }

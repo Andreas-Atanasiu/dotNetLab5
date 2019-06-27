@@ -1,5 +1,6 @@
 ﻿using Lab2.DTOs;
 using Lab2.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,24 +18,26 @@ namespace Lab2.Services
             this.context = context;
         }
 
-        public IEnumerable<GetCommentsDto> GetComments(string text = "")
+        public PaginatedList<GetCommentsDto> GetAll(int page, string filterString)
         {
-            IQueryable<GetCommentsDto> result = context.Comments.Select(x => new GetCommentsDto
-            {
-                Id = x.Id,
-                Text = x.Text,
-                Important = x.Important,
-                ExpenseId = (from ex in context.Expenses
-                             where ex.Comments.Contains(x)
-                             select ex.Id).FirstOrDefault()
-            });
+            IQueryable<Comment> result = context
+                .Comments
+                .Where(c => string.IsNullOrEmpty(filterString) || c.Text.Contains(filterString))
+                .OrderBy(c => c.Id)
+                .Include(c => c.Expense);
+            var paginatedResult = new PaginatedList<GetCommentsDto>();
+            paginatedResult.CurrentPage = page;
 
-            if (text != "")
-            {
-                result = result.Where(c => c.Text.Contains(text));
-            }
+            paginatedResult.NumberOfPages = (result.Count() - 1) / PaginatedList<GetCommentsDto>.EntriesPerPage + 1;
+            result = result
+                .Skip((page - 1) * PaginatedList<GetCommentsDto>.EntriesPerPage)
+                .Take(PaginatedList<GetCommentsDto>.EntriesPerPage);
+            paginatedResult.Entries = result.Select(c => GetCommentsDto.FromComment(c)).ToList();
 
-            return result;
+            return paginatedResult;
         }
+
+        
+     
     }
 }

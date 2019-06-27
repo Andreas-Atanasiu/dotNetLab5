@@ -12,5 +12,7 @@ namespace Lab2.Models
         public string Text { get; set; }
 
         public bool Important { get; set; }
+
+        public Expense Expense { get; set; }
     }
 }
