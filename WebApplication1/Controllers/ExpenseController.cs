@@ -37,7 +37,7 @@ namespace Lab2.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {   
-            var found = expenseService.GetById(id);
+            var found = expenseService.GetByIdNew(id);
 
             if (found == null)
             {

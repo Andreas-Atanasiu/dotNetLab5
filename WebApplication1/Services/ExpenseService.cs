@@ -53,11 +53,18 @@ namespace Lab2.Services
             return paginatedResult;
         }
 
-        public Expense GetById(int id)
-        {
-            return context.Expenses.Include(ex => ex.Comments).FirstOrDefault(ex => ex.Id == id);
-        }
+        //public Expense GetById(int id)
+        //{
+        //    return context.Expenses.Include(ex => ex.Comments).FirstOrDefault(ex => ex.Id == id);
+        //}
 
+        public ExpenseDetails GetByIdNew(int id)
+        {
+            var result = context.Expenses.Include(ex => ex.Comments).FirstOrDefault(ex => ex.Id == id);
+            ExpenseDetails expenseDetails = ExpenseDetails.DtoFromModel(result);
+
+            return expenseDetails;
+        }
 
         public Expense Create(PostExpenseDto expenseDto, User addedBy)
         {
