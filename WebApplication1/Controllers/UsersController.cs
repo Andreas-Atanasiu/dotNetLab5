@@ -49,11 +49,67 @@ namespace Lab2.Controllers
             return Ok(); //user);
         }
 
+        [Authorize(Roles = "Admin,UserManager")]
         [HttpGet]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
             return Ok(users);
+        }
+
+        [Authorize(Roles = "Admin,UserManager")]
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody]User user)
+        {
+            User userToBeUpdated = _userService.GetUserById(id);
+
+            
+            if (userToBeUpdated == null)
+            {
+                return NotFound();
+            }
+
+            //var currentUser = _userService.GetCurrentUser(HttpContext);
+            //
+            //if (currentUser.UserRole == UserRole.UserManager && userToBeUpdated.UserRole == UserRole.Admin)
+            // {
+            //    return Unauthorized();
+            // }
+
+            var result = _userService.UpdateUserNoRoleChange(id, user);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin,UserManager")]
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            //var currentUser = _userService.GetCurrentUser(HttpContext);
+
+            var userToDelete = _userService.GetUserById(id);
+
+            //if (currentUser.UserRole == UserRole.UserManager)
+            //{
+                if (userToDelete.UserRole == UserRole.Admin)
+                {
+                    return Unauthorized();
+                }
+
+                //int monthsDiff = DateTimeUtils.GetMonthDifference(currentUser.DateAdded, DateTime.Now);
+                //
+                //if (userToDelete.UserRole == UserRole.UserManager && monthsDiff < 6)
+                //{
+                //    return Unauthorized();
+                //}
+                //}
+
+            var result = _userService.DeleteUser(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
     }
 }

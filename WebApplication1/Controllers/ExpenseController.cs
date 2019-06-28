@@ -27,12 +27,13 @@ namespace Lab2.Controllers
         }
 
 
-       // [HttpGet]
-       // public IEnumerable<Expense> GetExpenses()
-       // {
-       //     return context.Expenses;
-       // }
+        // [HttpGet]
+        // public IEnumerable<Expense> GetExpenses()
+        // {
+        //     return context.Expenses;
+        // }
 
+        [Authorize(Roles = "Regular, Admin")]
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {   
@@ -45,7 +46,7 @@ namespace Lab2.Controllers
             return Ok(found);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Regular, Admin")]
         [HttpPost]
         public void Post([FromBody] PostExpenseDto expense)
         {
@@ -57,7 +58,7 @@ namespace Lab2.Controllers
             expenseService.Create(expense, addedBy  );   
         }
 
-
+        [Authorize(Roles = "Regular, Admin")]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Expense expense)
         {
@@ -66,6 +67,8 @@ namespace Lab2.Controllers
         }
 
 
+        [Authorize(Roles = "Regular, Admin")]
+    
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

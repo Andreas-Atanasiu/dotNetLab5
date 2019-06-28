@@ -27,9 +27,10 @@ namespace Lab2.Models
         //[EnumDataType(typeof(TypeEnum))]
         public TypeEnum Type { get; set; }
 
+        public User Owner { get; set; }
+
         public List<Comment> Comments { get; set; }
 
-        public User Owner { get; set; }
     }
 }
 

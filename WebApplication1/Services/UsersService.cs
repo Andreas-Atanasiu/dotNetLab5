@@ -2,6 +2,7 @@
 using Lab2.Models;
 using Lab2.Validators;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -20,8 +21,12 @@ namespace Lab2.Services
         GetUserDto Authenticate(string username, string password);
         ErrorsCollection Register(PostUserDto registerInfo);
         User GetCurrentUser(HttpContext httpContext);
-
         IEnumerable<GetUserDto> GetAll();
+
+        //Lab 5
+        User GetUserById(int id);
+        User UpdateUserNoRoleChange(int id, User user); //, User currentUser);
+        User DeleteUser(int id); //, User currentUser);
     }
 
     public class UsersService : IUsersService
@@ -65,7 +70,9 @@ namespace Lab2.Services
             {
                 Id = user.Id,
                 Username = user.Username,
-                Token = tokenHandler.WriteToken(token)
+                Token = tokenHandler.WriteToken(token),
+                UserRole = user.UserRole
+                
             };
 
             return result;
@@ -97,14 +104,16 @@ namespace Lab2.Services
             {
                 return errors; 
             }
-     
+
             context.Users.Add(new User
             {
                 LastName = registerInfo.LastName,
                 FirstName = registerInfo.FirstName,
                 Password = ComputeSha256Hash(registerInfo.Password),
                 Username = registerInfo.Username,
-                UserRole = UserRole.Regular
+                UserRole = UserRole.Regular,
+                DateAdded = DateTime.Now
+               
             });
 
             context.SaveChanges();
@@ -127,10 +136,77 @@ namespace Lab2.Services
             {
                 Id = user.Id,
                 Username = user.Username,
-                Token = null
+                Token = null,
+                UserRole = user.UserRole
+
             });
         }
 
-         
+        public User GetUserById(int id)
+        {
+            return context.Users.AsNoTracking()
+                .FirstOrDefault(u => u.Id == id);
+        }
+
+        //currentUser = userul logat
+        //user        = userul existent, cu valori noi
+        public User UpdateUserNoRoleChange(int id, User user) //, User currentUser)
+        {
+            
+            User userToBeUpdated = GetUserById(id);
+
+            user.Id = id;
+            user.UserRole = userToBeUpdated.UserRole; //UserRole Update not permitted
+            var userPassRecieved = ComputeSha256Hash(user.Password);
+
+            if ((user.Password == "") || (userPassRecieved == userToBeUpdated.Password))
+            {
+                user.Password = userToBeUpdated.Password;
+            }  else
+            {
+                user.Password = userPassRecieved;
+            }
+
+            user.DateAdded = DateTime.Now;
+
+            context.Users.Update(user);
+            context.SaveChanges();
+            
+            //don't return the password
+            user.Password = null;
+            return user;
+
+
+
+        //int monthsDiff = DateTimeUtils.GetMonthDifference(currentUser.DateAdded, DateTime.Now);
+        //
+        //if (currentUser.UserRole == UserRole.UserManager && monthsDiff < 6)
+        //{
+        //    user.UserRole = userToBeUpdated.UserRole;
+        //}
+
+        user.Password = ComputeSha256Hash(userToBeUpdated.Password);
+            user.DateAdded = DateTime.Now;
+            context.Users.Update(user);
+            context.SaveChanges();
+            return user;
+
+        }
+
+        public User DeleteUser(int id)
+        {
+            var existing = context.Users.FirstOrDefault(user => user.Id == id);
+            if (existing == null)
+            {
+                return null;
+            }
+
+            context.Users.Remove(existing);
+            context.SaveChanges();
+
+            return existing;
+        }
+
+
     }
 }

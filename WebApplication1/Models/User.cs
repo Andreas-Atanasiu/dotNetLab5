@@ -24,6 +24,8 @@ namespace Lab2.Models
 
         [EnumDataType(typeof(UserRole))]
         public UserRole UserRole { get; set; }
+        public DateTime DateAdded { get; set; }
+
 
         
     }
