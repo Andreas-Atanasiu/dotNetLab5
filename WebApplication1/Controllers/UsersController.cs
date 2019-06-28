@@ -41,12 +41,12 @@ namespace Lab2.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody]PostUserDto registerModel)
         {
-            var user = _userService.Register(registerModel);
-            if (user == null)
+            var errors = _userService.Register(registerModel); //, out User user);
+            if (errors != null)
             {
-                return BadRequest(new { ErrorMessage = "Username already exists" });
+                return BadRequest(errors);
             }
-            return Ok(user);
+            return Ok(); //user);
         }
 
         [HttpGet]

@@ -1,5 +1,6 @@
 ﻿using Lab2.DTOs;
 using Lab2.Models;
+using Lab2.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -17,7 +18,7 @@ namespace Lab2.Services
     public interface IUsersService
     {
         GetUserDto Authenticate(string username, string password);
-        GetUserDto Register(PostUserDto registerInfo);
+        ErrorsCollection Register(PostUserDto registerInfo);
         User GetCurrentUser(HttpContext httpContext);
 
         IEnumerable<GetUserDto> GetAll();
@@ -27,11 +28,13 @@ namespace Lab2.Services
     {
         private ExpensesDbContext context;
         private readonly AppSettings appSettings;
+        private IRegisterValidator registerValidator;
 
-        public UsersService(ExpensesDbContext context, IOptions<AppSettings> appSettings)
+        public UsersService(ExpensesDbContext context, IRegisterValidator registerValidator, IOptions<AppSettings> appSettings)
         {
             this.context = context;
             this.appSettings = appSettings.Value;
+            this.registerValidator = registerValidator;
         }
 
         public GetUserDto Authenticate(string username, string password)
@@ -86,15 +89,15 @@ namespace Lab2.Services
             }
         }
 
-        public GetUserDto Register(PostUserDto registerInfo)
+        public ErrorsCollection Register(PostUserDto registerInfo)
         {
 
-            User existing = context.Users.FirstOrDefault(u => u.Username == registerInfo.Username);
-
-            if (existing  != null){
-                return null;
+            var errors = registerValidator.Validate(registerInfo, context);
+            if (errors != null)
+            {
+                return errors; 
             }
-
+     
             context.Users.Add(new User
             {
                 LastName = registerInfo.LastName,
@@ -105,7 +108,8 @@ namespace Lab2.Services
             });
 
             context.SaveChanges();
-            return Authenticate(registerInfo.Username, registerInfo.Password);
+            //return Authenticate(registerInfo.Username, registerInfo.Password);
+            return null;
         }
 
         public User GetCurrentUser(HttpContext httpContext)

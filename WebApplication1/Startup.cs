@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lab2.Models;
 using Lab2.Services;
+using Lab2.Validators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -100,6 +101,7 @@ namespace WebApplication1
             services.AddScoped<IExpenseService, ExpenseService>();
             services.AddScoped<ICommentService, CommentsService>();
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IRegisterValidator, RegisterValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
